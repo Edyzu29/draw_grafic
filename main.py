@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from functions import *
+import matplotlib.dates as mdates
 
 # Data
 fechas_datos = ['date', 'ID_ESTACION', 'FECHA_DATA', 'HORA_DATA']
@@ -15,22 +17,33 @@ df = pd.read_excel('paraiso.xlsx')
 # Seleccionar solo las columnas especificadas en 'cabecera'
 df = df[cabecera]
 
-# Verificar la selección de columnas
-print(df.head())
-
 df['date'] = pd.to_datetime(df['date'])
 
+df_filtrado = tukey_2visagra(df, 'TEMP_INT_CASETA')
+
 # Graficar TEMP_INT_CASETA contra las fechas
-plt.figure(figsize=(10, 6))  # Tamaño de la figura
-plt.plot(df['date'], df['TEMP_INT_CASETA'], marker='o')
+plt.figure(figsize=(20, 6))  # Tamaño de la figura
+plt.plot(df_filtrado['date'], df_filtrado['TEMP_INT_CASETA'])
+
+plt.axhline(y=20, color='r', linestyle='--', label='Límite Inferior (20°C)')
+plt.axhline(y=30, color='b', linestyle='--', label='Límite Superior (30°C)')
+
+plt.xlim(df['date'].min(), df['date'].max())
 
 # Añadir etiquetas y título
 plt.xlabel('Fecha')
 plt.ylabel('Temperatura Interna Caseta (°C)')
 plt.title('Temperatura Interna de la Caseta a lo Largo del Tiempo')
 
-# Rotar las etiquetas de fecha en el eje X para mejor legibilidad
-plt.xticks(rotation=45)
+# Formatear el eje X para mostrar cada 15 días
+plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=8))
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d %b %Y'))
+
+# Añadir leyenda
+plt.legend()
+
+# Añadir la cuadrícula
+plt.grid(True)
 
 # Mostrar el gráfico
 plt.tight_layout()  # Ajustar el gráfico para que no se solapen los elementos

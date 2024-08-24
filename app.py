@@ -1,46 +1,31 @@
-from plotnine import aes, geom_path, geom_hline, ggplot, theme_light, labs
-
-from shiny import App, Inputs, Outputs, render, ui, reactive
+from shiny import App, Inputs, Outputs, render, ui, reactive, Session
+from shinywidgets import output_widget, render_plotly
 
 from datetime import date, timedelta
 
 from grafic import *
+import plotly.express as px
 
 
 
 magenta = "#9E2F68"
 magenta_light = "#E5C8D6"
 
-def plot_path(df, start_date, end_date):
-    
-    df = df[(df['date'] >= start_date) & (df['date'] <= end_date)]
-    
-    plot = (
-        ggplot(
-            df,
-            aes(x="date", y="TEMP_INT_CASETA"))
-        + geom_path(colour="red", size=0.8)
-        + geom_hline(yintercept=[30,20], 
-                    color = ["green", "blue"],
-                    linetype="dashed",
-                    size=1)
-        + labs(x="Fechas", y="Temperatura (°C)")
-        + theme_light()
-        )
-    return plot
 
+
+def filter_data(data, station, fechas = tuple()):
+
+    data_filtered = data[(data['date'] >= str(fechas[0])) & (data['date'] <= str(fechas[1]))]
+    data_filtered = data_filtered[data_filtered['ID_ESTACION'] == station]
+
+    return data_filtered
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
         ui.input_select(
-            "Selector_Estacion",
+            "Selector",
             "Estacion",
-            choices=[
-                "Paraiso",
-                "Nieveria",
-                "Roj",
-                "Amarillo"
-            ]
+            choices=Estaciones
         ),
         ui.div(
             ui.input_date_range(
@@ -48,33 +33,57 @@ app_ui = ui.page_sidebar(
                 "Rango de Tiempo", 
                 language="es", 
                 start=(date.today() - timedelta(days=10)),
-                format="d/mm/yyyy",
+                format="d/m/yy",
             ),
             ui.tags.style("""
             #daterange .form-control {
                 font-size: 12px;
             }""")
         )),
-    ui.card(
-            ui.card_header("Temperatura"),
-            ui.output_plot("Temperatura_plot"),),
+    ui.layout_columns(    
+        ui.card(ui.card_header("Temperatura"), output_widget("TEMP_INT"),),
+        ui.card(ui.card_header("Humedad"), output_widget("HR_INT"),),
+        ui.card(ui.card_header("PM10"), output_widget("PM10"),),
+        ui.card(ui.card_header("PM25"), output_widget("PM25"),),
+        col_widths=[6, 6, 12,12],
+        ),
+
     
     title="Temperatura Interna de la caseta",
     class_="bslib-page-dashboard",
 )
     
 
-def server(input: Inputs):
-    @reactive.calc()
+def server(input: Inputs, output: Outputs, session: Session):
+    @reactive.calc
     def data() -> pd.DataFrame:
-        return df_filtrado
+        dates = input.daterange()
+        station = input.Selector()
+        return  filter_data(df_filtrado, int(station), dates)
+    
+    @render_plotly
+    def TEMP_INT():
+        date = "date"
+        parametro = "TEMP_INT_CASETA"
+        return ploteando(data(), date, parametro, 20, 30)
+    
+    @render_plotly
+    def HR_INT():
+        date = "date"
+        parametro = "HUM_INT_CASETA"
+        return ploteando(data(), date, parametro, 0, 95)
 
-
-    @render.plot
-    def Temperatura_plot():
-        dates = input.daterange
-        print(date[0], date[1])
-        #return plot_path(data(), date[0], date[1])
-       
+    @render_plotly
+    def PM10():
+        date = "date"
+        parametro = "PM10_CONC"
+        return ploteando(data(), date, parametro, 0, 300)
+    
+    @render_plotly
+    def PM25():
+        date = "date"
+        parametro = "PM25_CONC"
+        return ploteando(data(), date, parametro, 0, 300)
+           
 
 app = App(app_ui,server)

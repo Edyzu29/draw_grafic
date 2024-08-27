@@ -4,7 +4,10 @@ from shinywidgets import output_widget, render_plotly
 from datetime import date, timedelta
 
 from grafic import *
+from plotting import *
 import plotly.express as px
+
+from labels import *
 
 
 
@@ -44,8 +47,9 @@ app_ui = ui.page_sidebar(
         ui.card(ui.card_header("Temperatura"), output_widget("TEMP_INT"),),
         ui.card(ui.card_header("Humedad"), output_widget("HR_INT"),),
         ui.card(ui.card_header("PM10"), output_widget("PM10"),),
+        ui.card(ui.card_header("Flujos"), output_widget("Flujos"),),
         ui.card(ui.card_header("PM25"), output_widget("PM25"),),
-        col_widths=[6, 6, 12,12],
+        col_widths=[6, 6, 8,4,8],
         ),
 
     
@@ -65,25 +69,29 @@ def server(input: Inputs, output: Outputs, session: Session):
     def TEMP_INT():
         date = "date"
         parametro = "TEMP_INT_CASETA"
-        return ploteando(data(), date, parametro, 20, 30)
+        return plot_scatter(data(), date, parametro, 20, 30)
     
     @render_plotly
     def HR_INT():
         date = "date"
         parametro = "HUM_INT_CASETA"
-        return ploteando(data(), date, parametro, 0, 95)
+        return plot_scatter(data(), date, parametro, 0, 95)
 
     @render_plotly
     def PM10():
         date = "date"
         parametro = "PM10_CONC"
-        return ploteando(data(), date, parametro, 0, 300)
+        return plot_scatter(data(), date, parametro, 0, 300)
     
     @render_plotly
     def PM25():
         date = "date"
         parametro = "PM25_CONC"
-        return ploteando(data(), date, parametro, 0, 300)
+        return plot_scatter(data(), date, parametro, 0, 300)
+    
+    @render_plotly
+    def Flujos():
+        return plot_dumbbell(data())
            
 
 app = App(app_ui,server)

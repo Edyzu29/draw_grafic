@@ -32,7 +32,7 @@ app_ui = ui.page_sidebar(
                 "daterange", 
                 "Rango de Tiempo", 
                 language="es", 
-                start=(date.today() - timedelta(days=10)),
+                start=(date.today() - timedelta(days=5)),
                 format="d/m/yy",
             ),
             ui.tags.style("""

@@ -31,6 +31,58 @@ def plot_scatter(data, x_axis, y_axis, lit_min, lit_max):
     )
     return figu
 
+def plot_simple(data: pd.DataFrame):
+
+    flow_equitments = [x for x in data.columns if "FLOW" in x]
+
+    fig = make_subplots(
+        rows=len(flow_equitments), 
+        cols=1, 
+        vertical_spacing=0.12
+    )
+
+    for i, equiptment in enumerate(flow_equitments, start=1):
+        fig.add_trace(
+            go.Scatter(
+                
+                x= data['date'],
+                y= data[equiptment],
+                mode="lines"
+            ) ,
+            row=i, 
+            col=1
+        )
+
+
+    fig.update_layout(
+        height=100 * len(flow_equitments),  # Altura proporcional a la cantidad de equipos
+        legend_title="Valores",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(l=50, r=50, t=50, b=50),
+        
+    )
+
+     # Añadir el título del eje X solo en la última gráfica
+    fig.update_xaxes(
+        title_text="Flujo",
+        row=len(flow_equitments), col=1
+    )
+    
+    # Ajustar el estilo del eje Y para todos los subplots
+    fig.update_yaxes(
+        showline=True,
+        linewidth=2,
+        linecolor='black',
+        mirror=True
+    )
+    fig.update_yaxes(
+        title_text="Equipos",
+        row=(len(flow_equitments) + 1)/2, col=1
+    )
+
+    fig.show()
+
+    return fig
 
 
 def plot_dumbbell(data = pd.DataFrame):
@@ -149,3 +201,6 @@ def plot_dumbbell(data = pd.DataFrame):
     )
     
     return fig
+
+
+plot_simple(df_filtrado)

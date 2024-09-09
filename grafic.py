@@ -27,6 +27,3 @@ df = df[cabecera]
 
 df['date'] = pd.to_datetime(df['date'])
 
-df_filtrado = tukey_2visagra(df, 'TEMP_INT_CASETA')
-
-#PLOT

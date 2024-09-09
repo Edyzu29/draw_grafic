@@ -5,30 +5,67 @@ import plotly.express as px
 from labels import *
 from grafic import *
 
-def plot_scatter(data, x_axis, y_axis, lit_min, lit_max):
+def plot_scatter(data, x_axis, y_axis, lit_min = 0, lit_max = 0,  Eca = 0,switch_limit_manual = True):
     figu = px.line(data, 
                       x=x_axis, 
                       y=y_axis, 
                       labels= {x_axis: "Fecha", y_axis : rename_colum[y_axis]},
                       )
-
-
-    figu.add_shape(
+    
+    if switch_limit_manual:
+        min_val = lit_min
+        min_name = "Limit Inferior"
+        
+        max_val = lit_max
+        max_name = "Limit Superior"
+        
+    else:
+        min_val, max_val = Limite_inf_sup(df, y_axis)
+        min_name = "Limit Inferior Historico"
+        max_name = "Limit Superior Historico"
+        
+    if Eca != 0:
+        figu.add_shape(
         type="line",
         x0=data["date"].min(),  # Fecha inicial
         x1=data["date"].max(),  # Fecha final
-        y0=lit_min,  # Valor en Y donde comienza la línea
-        y1=lit_min,  # Valor en Y donde termina la línea
-        line=dict(color="blue", width=2, dash="dash")  # Personaliza el color, grosor y estilo de la línea
+        y0=Eca,  # Valor en Y donde comienza la línea
+        y1=Eca,  # Valor en Y donde termina la línea
+        line=dict(color="green", width=2, dash="dash"),  # Personaliza el color, grosor y estilo de la línea
+        )
+    
+    figu.add_trace(
+    go.Scatter(
+        x=[data["date"].min(), data["date"].max()],  # Define los puntos inicial y final en X
+        y=[max_val, max_val],  # Define los puntos inicial y final en Y
+        mode="lines",  # Modo de la traza, solo líneas
+        name=max_name,  # Nombre que aparecerá en la leyenda
+        line=dict(color="red", width=2, dash="dash")  # Personaliza la línea
+    ))
+    
+    figu.add_trace(
+    go.Scatter(
+        x=[data["date"].min(), data["date"].max()],  # Define los puntos inicial y final en X
+        y=[min_val, min_val],  # Define los puntos inicial y final en Y
+        mode="lines",  # Modo de la traza, solo líneas
+        name=min_name,  # Nombre que aparecerá en la leyenda
+        line=dict(color="blue", width=2, dash="dash")  # Personaliza la línea
+    ))
+    
+    figu.update_layout(
+    legend=dict(
+        x=1,       # Mueve la leyenda ligeramente fuera del gráfico a la derecha
+        y=1,          # Posición Y de la leyenda (1 es parte superior)
+        xanchor='right',  # Ancla de la leyenda para la posición X
+        yanchor='top',
+        bgcolor="rgba(255, 255, 255, 0.7)",  # Fondo blanco semi-transparente para la leyenda
+        bordercolor="black",  # Color del borde del marco de la leyenda
+        borderwidth=2 ,        # Grosor del borde del marco# Ancla de la leyenda para la posición Y
+        orientation='v'  # Orientación vertical de la leyenda
+      ) 
     )
-    figu.add_shape(
-        type="line",
-        x0=data["date"].min(),  # Fecha inicial
-        x1=data["date"].max(),  # Fecha final
-        y0=lit_max,  # Valor en Y donde comienza la línea
-        y1=lit_max,  # Valor en Y donde termina la línea
-        line=dict(color="red", width=2, dash="dash")  # Personaliza el color, grosor y estilo de la línea
-    )
+
+    
     return figu
 
 def plot_simple(data: pd.DataFrame):
@@ -202,5 +239,3 @@ def plot_dumbbell(data = pd.DataFrame):
     
     return fig
 
-
-plot_simple(df_filtrado)

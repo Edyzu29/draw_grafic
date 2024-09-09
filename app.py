@@ -10,12 +10,6 @@ import plotly.express as px
 from labels import *
 
 
-
-magenta = "#9E2F68"
-magenta_light = "#E5C8D6"
-
-
-
 def filter_data(data, station, fechas = tuple()):
 
     data_filtered = data[(data['date'] >= str(fechas[0])) & (data['date'] <= str(fechas[1]))]
@@ -47,7 +41,15 @@ app_ui = ui.page_sidebar(
         ui.card(ui.card_header("Temperatura"), output_widget("TEMP_INT"),),
         ui.card(ui.card_header("Humedad"), output_widget("HR_INT"),),
         ui.card(ui.card_header("PM10"), output_widget("PM10"),),
-        ui.card(ui.card_header("Flujos"), output_widget("Flujos"),),
+        ui.card(
+            ui.card_header("Flujos"), 
+            ui.nav_panel(
+              "Variacion",
+                output_widget("Flujos"),),
+            ui.nav_panel(
+              "Datos",
+                output_widget("Flujos"),),
+            ),
         ui.card(ui.card_header("PM25"), output_widget("PM25"),),
         col_widths=[6, 6, 8,4,8],
         ),
@@ -63,7 +65,7 @@ def server(input: Inputs, output: Outputs, session: Session):
     def data() -> pd.DataFrame:
         dates = input.daterange()
         station = input.Selector()
-        return  filter_data(df_filtrado, int(station), dates)
+        return  filter_data(df, int(station), dates)
     
     @render_plotly
     def TEMP_INT():
@@ -81,17 +83,22 @@ def server(input: Inputs, output: Outputs, session: Session):
     def PM10():
         date = "date"
         parametro = "PM10_CONC"
-        return plot_scatter(data(), date, parametro, 0, 300)
+        return plot_scatter(data(), date, parametro, switch_limit_manual=False)
     
     @render_plotly
     def PM25():
         date = "date"
         parametro = "PM25_CONC"
-        return plot_scatter(data(), date, parametro, 0, 300)
+        return plot_scatter(data(), date, parametro, switch_limit_manual=False)
     
     @render_plotly
-    def Flujos():
+    def Variacion_flujo():
         return plot_dumbbell(data())
+    
+    def Datos_flujos():
+        date = "date"
+        parametro = ""
+        return plot_simple(data(), date, )
            
 
 app = App(app_ui,server)

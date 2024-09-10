@@ -68,14 +68,14 @@ def plot_scatter(data, x_axis, y_axis, lit_min = 0, lit_max = 0,  Eca = 0,switch
     
     return figu
 
-def plot_simple(data: pd.DataFrame):
+def plot_simple_flow(data: pd.DataFrame):
 
     flow_equitments = [x for x in data.columns if "FLOW" in x]
 
     fig = make_subplots(
         rows=len(flow_equitments), 
         cols=1, 
-        vertical_spacing=0.12
+        vertical_spacing=0.075
     )
 
     for i, equiptment in enumerate(flow_equitments, start=1):
@@ -84,27 +84,28 @@ def plot_simple(data: pd.DataFrame):
                 
                 x= data['date'],
                 y= data[equiptment],
-                mode="lines"
+                mode="lines",
+                showlegend=False
             ) ,
             row=i, 
             col=1
         )
+        fig.update_yaxes(
+            title_text=f"{rename_colum[equiptment]}", 
+            title_standoff=20,  # Ajusta la distancia del título al eje
+            tickangle=0,  # Mantiene el título en horizontal
+            row=i,
+            col=1,
+            )
 
 
     fig.update_layout(
-        height=100 * len(flow_equitments),  # Altura proporcional a la cantidad de equipos
-        legend_title="Valores",
+        height=130 * len(flow_equitments),  # Altura proporcional a la cantidad de equipos
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        margin=dict(l=50, r=50, t=50, b=50),
+        margin=dict(l=0, r=0, t=0, b=0),
         
     )
 
-     # Añadir el título del eje X solo en la última gráfica
-    fig.update_xaxes(
-        title_text="Flujo",
-        row=len(flow_equitments), col=1
-    )
-    
     # Ajustar el estilo del eje Y para todos los subplots
     fig.update_yaxes(
         showline=True,
@@ -112,17 +113,57 @@ def plot_simple(data: pd.DataFrame):
         linecolor='black',
         mirror=True
     )
-    fig.update_yaxes(
-        title_text="Equipos",
-        row=(len(flow_equitments) + 1)/2, col=1
+
+    return fig
+  
+def plot_meteorologica(data: pd.DataFrame):
+    
+    fig = make_subplots(
+        rows=len(parametros_met), 
+        cols=1, 
+        vertical_spacing=0.075
+    )
+    
+    for i, data_sensor in enumerate(parametros_met, start=1):
+        fig.add_trace(
+            go.Scatter(
+                
+                x= data['date'],
+                y= data[data_sensor],
+                mode="lines",
+                showlegend=False
+            ) ,
+            row=i, 
+            col=1
+        )
+        fig.update_yaxes(
+             title_text=f"{rename_colum[data_sensor].replace(' ', '<br>')}",  # Inserta un salto de línea en lugar de espacios
+            title_standoff=20,  # Ajusta la distancia del título al eje
+            tickangle=0,  # Mantiene el título en horizontal
+            row=i,
+            col=1,
+            )
+    
+    fig.update_layout(
+        height=130 * len(parametros_met),  # Altura proporcional a la cantidad de equipos
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(l=0, r=0, t=0, b=0),
+        
     )
 
-    fig.show()
+    # Ajustar el estilo del eje Y para todos los subplots
+    fig.update_yaxes(
+        showline=True,
+        linewidth=2,
+        linecolor='black',
+        mirror=True
+    )
 
     return fig
 
+         
 
-def plot_dumbbell(data = pd.DataFrame):
+def plot_dumbbell_flow(data: pd.DataFrame):
     
     flow_table = {
         "equipments": [],

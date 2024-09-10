@@ -1,10 +1,10 @@
 
 rename_colum = {
-    'PBAR': "Presion Atmosferica (mmhg)", 
+    'PBAR': "Presion At.(mmhg)", 
     'PP': "Precipitacion",
-    'TEMP' : "Temperatura Ambiental (°C)",
-    'HR': "Humedad Relativa (%)",
-    'ws': "Velocidad del Viento (ms)",
+    'TEMP' : "Temperatura Amb.(°C)",
+    'HR': "Humedad Relativa(%)",
+    'ws': "Velocidad del Viento(ms)",
     'wd': "Direccion de Viento",
     'TEMP_INT_CASETA': "Temperatura Interna (°C)",
     'HUM_INT_CASETA': "Humedad Interna (%)",

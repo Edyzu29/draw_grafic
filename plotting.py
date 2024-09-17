@@ -3,7 +3,8 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import plotly.express as px
 from labels import *
-from grafic import *
+from data_tratement import *
+from Stadistics import *
 
 def plot_scatter(data, x_axis, y_axis, lit_min = 0, lit_max = 0,  Eca = 0,switch_limit_manual = True):
     figu = px.line(data, 
@@ -160,8 +161,6 @@ def plot_meteorologica(data: pd.DataFrame):
     )
 
     return fig
-
-         
 
 def plot_dumbbell_flow(data: pd.DataFrame):
     

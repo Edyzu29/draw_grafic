@@ -1,7 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-from Stadistics import *
-import matplotlib.dates as mdates
 
 
 # Data
@@ -27,3 +24,9 @@ df = df[cabecera]
 
 df['date'] = pd.to_datetime(df['date'])
 
+def filter_data(data, station, fechas = tuple()):
+
+    data_filtered = data[(data['date'] >= str(fechas[0])) & (data['date'] <= str(fechas[1]))]
+    data_filtered = data_filtered[data_filtered['ID_ESTACION'] == station]
+
+    return data_filtered

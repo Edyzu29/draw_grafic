@@ -1,21 +1,13 @@
-from shiny import App, Inputs, Outputs, render, ui, reactive, Session
+from shiny import App, Inputs, Outputs, ui, reactive, Session
 from shinywidgets import output_widget, render_plotly
 
 from datetime import date, timedelta
 
-from grafic import *
+from data_tratement import *
 from plotting import *
-import plotly.express as px
 
 from labels import *
 
-
-def filter_data(data, station, fechas = tuple()):
-
-    data_filtered = data[(data['date'] >= str(fechas[0])) & (data['date'] <= str(fechas[1]))]
-    data_filtered = data_filtered[data_filtered['ID_ESTACION'] == station]
-
-    return data_filtered
 
 app_ui = ui.page_sidebar(
     ui.sidebar(

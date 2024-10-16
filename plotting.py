@@ -66,6 +66,28 @@ def plot_scatter(data, x_axis, y_axis, lit_min = 0, lit_max = 0,  Eca = 0,switch
       ) 
     )
 
+    last_value = (float(data[y_axis].iloc[-1]))
+    msg_value = str()
+
+    if last_value >= min_val and last_value <= max_val:
+        msg_value = f"Último Valor: {last_value:.2f} ✔️"
+
+    else:
+        msg_value = f"Último Valor: {last_value:.2f} ❌"
+        
+
+    figu.add_annotation(
+            x=0, #data["date"].min() 
+            y=0.999, 
+            text=msg_value,
+            showarrow=False,
+            xanchor='left',
+            yanchor='bottom',
+            xref='paper',  # Relacionado con el área del gráfico (en lugar de los datos)
+            yref='paper',  # Relacionado con el área del gráfico
+            font=dict(size=12, color="black"),
+        )
+
     
     return figu
 

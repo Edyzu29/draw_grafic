@@ -1,4 +1,4 @@
-from shiny import App, Inputs, Outputs, ui, reactive, Session
+from shiny import App, Inputs, Outputs, ui, reactive, Session, render
 from shinywidgets import output_widget, render_plotly
 
 from datetime import date, timedelta
@@ -7,6 +7,8 @@ from data_tratement import *
 from plotting import *
 
 from labels import *
+
+from another_plotting import *
 
 
 app_ui = ui.page_sidebar(
@@ -32,7 +34,7 @@ app_ui = ui.page_sidebar(
     ui.layout_columns( 
         ui.layout_columns(    
             ui.card(ui.card_header("Temperatura"), output_widget("TEMP_INT"),),
-            ui.card(ui.card_header("Humedad"), output_widget("HR_INT"),),
+            ui.card(ui.page_fluid(ui.output_text("altair_case"),)),
             col_widths=[6, 6],
             ),
         
@@ -81,6 +83,13 @@ def server(input: Inputs, output: Outputs, session: Session):
         date = "date"
         parametro = "TEMP_INT_CASETA"
         return plot_scatter(data(), date, parametro, 20, 30)
+    
+    @output
+    @render.text
+    def altair_case():
+        date = "date"
+        parametro = "TEMP_INT_CASETA"
+        return plotting_line_altair(data(), date, parametro, 20, 30)
     
     @render_plotly
     def HR_INT():

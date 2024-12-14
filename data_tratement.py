@@ -30,3 +30,5 @@ def filter_data(data, station, fechas = tuple()):
     data_filtered = data_filtered[data_filtered['ID_ESTACION'] == station]
 
     return data_filtered
+
+print(df.dtypes)
